@@ -5,7 +5,7 @@ services:
     build: .
     command: python /codeintry/manage.py runserver 0.0.0.0:8000
     environment: 
-      - SECRET_KEY=jnu-ci52$n44m$w@u=9jmoatf$_l9r)3@8(ka713m!1343=!pd
+      - SECRET_KEY=jnu-ci52$$n44m$$w@u=9jmoatf$$_l9r)3@8(ka713m!1343=!pd
       - DEBUG=1
     volumes:
       - .:/codeintry

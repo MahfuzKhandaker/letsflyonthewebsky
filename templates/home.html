@@ -4,7 +4,7 @@
 
 {% block title %}Home{% endblock title %}
 
-{% block content %}
+{% block page_content %}
 
 <h1>Homepage</h1>
 <img class="cover" src="{% static 'images/web1.jpg' %}" alt="">
@@ -16,4 +16,4 @@
     <a href="{% url 'account_login' %}">Log In</a>
     <a href="{% url 'account_signup' %}">Sign Up</a>
 {% endif %}
-{% endblock content %}
+{% endblock page_content %}
