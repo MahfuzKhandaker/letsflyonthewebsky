@@ -1,5 +1,5 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_save
@@ -7,8 +7,6 @@ from django.urls import reverse
 
 from blog.utils import get_read_time
 from django.utils.safestring import mark_safe
-
-# from markdown_deux import markdown
 
 
 class Category(models.Model):
@@ -24,11 +22,11 @@ STATUS = (
     (0,"Draft"),
     (1,"Publish")
 )
-
 class Post(models.Model):
     main_image      = models.ImageField(upload_to='images/', blank=True)
-    title           = models.CharField(max_length=255)
+    title           = models.CharField(max_length=125)
     slug            = models.SlugField(null=False, unique=True)
+    summary         = models.CharField(max_length=255, null=True, blank=True)
     body            = models.TextField()
     created_on      = models.DateTimeField(auto_now_add=True)
     status          = models.IntegerField(choices=STATUS, default=0)
@@ -48,10 +46,6 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('blog_detail', kwargs={'slug': self.slug})
-
-    # def get_markdown(self):
-    #     content = self.body
-    #     return markdown(content)
 
 
     @property
@@ -87,7 +81,7 @@ class CommentManager(models.Manager):
 
 
 class Comment(models.Model):
-    user            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user            = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     content_type    = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id       = models.PositiveIntegerField()
     content_object  = GenericForeignKey('content_type', 'object_id')

@@ -1,0 +1,23 @@
+{% load blog_tags %}
+
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-12">
+          <ul class="list-group">
+            <li class="list-group-item">{% latest_posts %}</li>          
+            <li class="list-group-item">
+              <div class="row py-5">
+                <div class="col-sm text-center">
+                  <h2>Stay Updated</h2>
+                  <p>Subscribe to our newsletter to get our latest news.</p>
+                  <form action="{% url 'newsletters:subscribe' %}" method="POST">{% csrf_token %}
+                    <input type="email" name="email" placeholder="Enter email address">
+                    <input type="submit" value="Subscribe">
+                  </form>
+                </div>
+              </div>
+            </li>
+          </ul>
+    </div>
+  </div>
+</div>

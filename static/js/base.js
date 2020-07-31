@@ -18,7 +18,7 @@ $(window).on('load', function() { // makes sure the whole site is loaded
   
       // var indicator = ( positionY / (viewport)) * 100;
   
-      if( positionY > 115) {
+      if( positionY >= 100) {
             $('.sticky-nav').addClass('sticky')
           } else {
             $('.sticky-nav').removeClass('sticky')

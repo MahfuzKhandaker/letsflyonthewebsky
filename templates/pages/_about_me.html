@@ -1,0 +1,24 @@
+{% load static %}
+{% for about_entry in about_instance %}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 py-3">
+                <img class="rounded-circle mx-auto d-block mb-3" src="{{ about_entry.profile_pic.url }}" alt="">
+                <small class="text-center">{{ about_entry.bio }}</small>
+            </div>
+            <div class="col-md-8 py-3">
+                <h3 class="card-title">{{ about_entry.name }}</h3>
+                <h5 class="card-subtitle text-muted">{{ about_entry.title }}</h5>
+                
+                <hr>
+                <p class="card-text">{{ about_entry.description }}</p>
+                <a href="{% url 'contact' %}" class="blog-home__cta">Contact</a>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+{% endfor %}

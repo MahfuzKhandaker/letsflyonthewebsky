@@ -6,6 +6,7 @@
 
 <div class="container-fluid">
   <h1>{{ post_num }} Blogs</h1>
+  
 <div class="row">
 
   {% for post in posts %}
@@ -13,10 +14,10 @@
 
     <div class="col-md-6">
       
-        <div class="card mb-2 anim-card">
+        <div class="card mb-2 animated animatedFadeInUp fadeInUp">
             <img class="card-img-top" src="{{ post.main_image.url }}" alt="{{ post.title }}">
             <div class="card-body">
-              <h3 class="card-title"><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h3>
+              <h3 class="card-title"><a class="text-dark" href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h3>
               <small class="text-muted">
                 Published on:&nbsp;
                 {{ post.created_on.date }} |&nbsp;

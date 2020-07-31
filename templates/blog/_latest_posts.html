@@ -1,0 +1,16 @@
+{% for entry in posts %}
+<blockquote class="blockquote">
+  <p class="mb-0"><a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a></p>
+  <footer class="blockquote-footer">
+    {{ entry.created_on.date }} |&nbsp; 
+
+    <cite title="Source Title">
+      {% for category in entry.categories.all %}
+      <a href="{% url 'blog_category' category.name %}">
+        {{ category.name }}
+      </a>
+      {% endfor %}
+    </cite>
+  </footer>
+</blockquote>
+{% endfor %}

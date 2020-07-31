@@ -1,0 +1,25 @@
+{% extends "_base.html" %}
+
+{% block page_content %}
+
+<div class="container-fluid">
+<h1 class="text-center">My Projects</h1>
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-md-6">
+            <div class="card mb-2 animated animatedFadeInUp fadeInUp">
+                <img class="card-img-top" src="{{ project.image.url }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text">{{ project.description | truncatewords:15 }}</p>
+                    <a href="{% url 'project_detail' project.pk %}"
+                       class="btn btn-primary">
+                        Read More
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

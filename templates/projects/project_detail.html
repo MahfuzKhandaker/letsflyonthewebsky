@@ -1,0 +1,30 @@
+{% extends "_base.html" %}
+
+{% block page_content %}
+
+<div class="col-md-12">
+    <div class="card w-75 project-card">
+      <div class="card-img-block">
+        <img class="img-fluid" src="{{ project.image.url }}" alt="Card image cap">
+      </div>
+      <div class="card-body pt-5">
+        <h3 class="card-title">{{ project.title }}</h3>
+        <small>
+            <h5>
+                Technology used:&nbsp;
+                {{ project.technology }}
+            </h5>
+        </small>
+        <p class="card-text">{{ project.description }}</p>
+
+        <div class="icon-block">
+            <a class="btn btn-primary" href="{% url 'contact' %}">Contact</a>
+          <!-- <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"> <i class="fab fa-twitter"></i></a>
+          <a href="#"> <i class="fab fa-google-plus"></i></a> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

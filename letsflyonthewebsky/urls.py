@@ -27,9 +27,10 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     
     # Local apps
-    # path('accounts/', include('users.urls')),
-
     path('', include('pages.urls')),
     path('blog/', include('blog.urls')),
     path('contact/', include('contact.urls')),
+    path('projects/', include('projects.urls')),
+    path('newsletters/', include('newsletters.urls', namespace='newsletters')),
+    path('newsletter_control/', include('newsletter_control_panel.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

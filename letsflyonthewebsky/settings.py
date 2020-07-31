@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'pages.apps.PagesConfig',
     'blog.apps.BlogConfig',
+    'projects.apps.ProjectsConfig',
     'contact.apps.ContactConfig',
+    'newsletters.apps.NewslettersConfig',
 ]
 
 # django-allauth config
@@ -175,9 +177,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # LOGIN_REDIRECT_URL = 'home'
 # LOGOUT_REDIRECT_URL = 'home'
 
-DEFAULT_FROM_EMAIL = 'admin@letsflyonthewebsky.com'
+# DEFAULT_FROM_EMAIL = 'admin@letsflyonthewebsky.com'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # These are the settings for sending email in Django via Gmail
 from .email_info import EMAIL_BACKEND, EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_USE_TLS, EMAIL_USE_SSL

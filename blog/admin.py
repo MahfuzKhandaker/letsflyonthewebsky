@@ -11,7 +11,7 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ['title', 'body']
     prepopulated_fields = {'slug': ('title',)}
     form = PostForm
-    fields = ['title', 'slug', 'body', 'main_image', 'categories', 'status']
+    fields = ['title', 'slug', 'summary', 'body', 'main_image', 'categories', 'status']
     
     
 class CategoryAdmin(admin.ModelAdmin):
