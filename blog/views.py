@@ -18,11 +18,11 @@ class Blogs(generic.ListView):
     model = Post
     template_name = 'blog/blog_index.html'
     context_object_name = 'posts'
-    paginate_by = 5
+    paginate_by = 3
 
     def get_context_data(self, **kwargs):
         context = super(Blogs, self).get_context_data(**kwargs)
-        context['post_num'] = Post.objects.count()
+        context['post_num'] = Post.objects.filter(status=1).count()
         return context
 
         
@@ -57,9 +57,9 @@ def blog_detail(request, slug):
     instance.save()
 
     form = CommentForm(request.POST or None)
-    if form.is_valid():
+    if form.is_valid() and request.is_ajax():
         if not request.user.is_authenticated:
-            return redirect('login')
+            return redirect('account_login')
         content_type = instance.get_content_type
         object_id = instance.id
         content_data = form.cleaned_data['content']
@@ -73,7 +73,7 @@ def blog_detail(request, slug):
             parent_qs = Comment.objects.filter(id=parent_id)
             if parent_qs.exists():
                 parent_obj = parent_qs.first()
-    
+        
         Comment.objects.get_or_create(
             user=request.user,
             content_type=content_type,
@@ -123,7 +123,7 @@ def comment_thread(request, pk):
     form = CommentForm(request.POST or None)
     if form.is_valid():
         if not request.user.is_authenticated:
-            return redirect('login')
+            return redirect('account_login')
         content_type = obj.content_object.get_content_type
         object_id = obj.content_object.id
         content_data = form.cleaned_data['content']

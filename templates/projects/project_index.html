@@ -2,6 +2,7 @@
 
 {% block page_content %}
 
+{% if projects %}
 <div class="container-fluid">
 <h1 class="text-center">My Projects</h1>
     <div class="row">
@@ -22,4 +23,7 @@
         {% endfor %}
     </div>
 </div>
+{% else %}
+<center><h3>Oops!No project found.</h3></center>
+{% endif %}
 {% endblock %}

@@ -1,15 +1,14 @@
 {% extends 'control_base.html' %}
 
 {% block page_content %}
+{% if newsletters %}  
 <div class="col-sm-9 py-3">
     <div class="row">
         <div class="col-sm-10">
             <h1 class="page-header">All Newsletter</h1>
         </div>
-        <div class="col-sm-2">
-            <a href="{% url 'newsletter' %}"><button type="button" class="btn btn-secondary">New Newsletter</button> </a>
-        </div>
     </div>
+    
     <div class="table-responsive table-hover">
         <table class="table">
             <thead>
@@ -20,7 +19,9 @@
                 <th>Edit</th>
                 <th>Delete</th>
             </thead>
+            
             <tbody>
+              
                 {% for item in newsletters %}
                 <tr>
                     <td><a href="{% url 'newsletter-detail' item.pk %}">{{ item.subject }}</a></td>
@@ -31,16 +32,25 @@
                     <td><a href="{% url 'newsletter-delete' item.pk %}">Delete</a></td>
                 </tr>
                 {% endfor %}
+            
+            
             </tbody>
 
         </table>
-
     </div>
+    
+
     {% if is_paginated %}
   <div class="container">
     {% include 'pagination.html' %}
 </div>
 {% endif %}
 </div>
+{% else %}
+<div class="container pt-5">
+    <h3>Oops! No newsletter found.</h3>
+</div>
+    
+{% endif %}
 
 {% endblock page_content %}

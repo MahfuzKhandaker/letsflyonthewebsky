@@ -28,5 +28,11 @@ class Newsletter(models.Model):
     
     objects = models.Manager()
 
+    class Meta:
+        permissions = [
+            ('special_status', 'can read all newsletter'),
+        ]
+
     def __str__(self):
         return self.subject
+    

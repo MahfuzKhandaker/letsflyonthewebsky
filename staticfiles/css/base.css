@@ -27,11 +27,6 @@ body {
     margin-left: auto;
 }
 
-.card-img-right {
-	height: 100%;
-	border-radius: 0 3px 3px 0;
-}
-  
 .flex-auto {
 	-ms-flex: 0 0 auto;
 	-webkit-box-flex: 0;
@@ -44,8 +39,8 @@ body {
     position: relative;
     width: 100%;
     min-height: 1px;
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-right: 10px;
+    padding-left: 10px;
 }
 
 @media (min-width: 768px){
@@ -55,11 +50,19 @@ body {
         max-width: 33.333333%;
     }
 }
+
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: .75rem 1.25rem;
+  background-color: #fff;
+  /* border: 1px solid rgba(0,0,0,.125); */
+}
 /* END blog-main */
 
 /* START Header */
 .sticky-nav {
-  min-height: 10vh;
+  width: 100%;
   z-index: 10;
 }
 .sticky {
@@ -90,11 +93,10 @@ a:hover {
 .make-me-sticky {
 	position: -webkit-sticky;
 	position: sticky;
-	top: 10vh;
+	top: 100px;
   	/* padding: 0 10px; */
 }
 /* END Sidebar: make-me-sticky  */
-
 .card-title {
 	margin-bottom: 0;
 	font-size: 1.5rem;
@@ -105,8 +107,22 @@ a:hover {
 	font-size: 1.1rem;
 	color: #999;
 }
-  
-  @media (min-width: 40em) {
+.card-img-top {
+  width: 100%;
+  max-height: 300px;
+  object-fit:cover;
+}
+
+.rounded-circle {
+  top: 50%;
+  left: 50%;
+  max-height: 156px;
+  max-width: 156px;
+  border-radius: 50%;
+  border: 3px solid;
+}
+
+@media (min-width: 40em) {
 	.card-title {
 	  font-size: 2rem;
 	}

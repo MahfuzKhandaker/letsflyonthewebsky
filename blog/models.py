@@ -18,6 +18,10 @@ class Category(models.Model):
         return self.name
 
 
+class PostManager(models.Manager):
+    def get_queryset(self):
+        return super(PostManager, self).get_queryset().filter(status=1)
+
 STATUS = (
     (0,"Draft"),
     (1,"Publish")
@@ -36,7 +40,7 @@ class Post(models.Model):
     number_of_views = models.IntegerField(default=0, null=True, blank=True) 
     number_of_likes = models.IntegerField(default=0, null=True, blank=True) 
 
-    objects = models.Manager()
+    objects = PostManager()
 
     class Meta: 
         ordering = ['-created_on']

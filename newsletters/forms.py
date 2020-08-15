@@ -12,7 +12,7 @@ class NewsUserForm(forms.ModelForm):
         return email
 
 class NewsletterCreationForm(forms.ModelForm):
-    body = forms.CharField(widget=PagedownWidget())
+    body = forms.CharField(widget=PagedownWidget(attrs={'rows':5, 'cols':10}))
     class Meta:
         model = Newsletter
         fields = ['subject', 'body', 'email', 'status']

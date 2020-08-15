@@ -20,8 +20,10 @@
       </form>
     </div>
   </div>
-  
+    
+  {% if posts %}
     <div class="row py-3">
+      
       {% for post in posts %}
       <div class="col-md-6">
       
@@ -48,8 +50,14 @@
         </div>
     </div>
       {% endfor %}
+     
     </div>
-  
+   {% else %}
+    <center>
+      <h5>Oops!No post found</h5>
+    </center>
+    {% endif %}
+
     {% if is_paginated %}
     <div class="container mb-3">
       {% include 'pagination.html' %}

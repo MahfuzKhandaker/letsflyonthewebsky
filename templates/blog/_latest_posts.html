@@ -1,3 +1,4 @@
+{% if posts %}
 {% for entry in posts %}
 <blockquote class="blockquote">
   <p class="mb-0"><a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a></p>
@@ -14,3 +15,9 @@
   </footer>
 </blockquote>
 {% endfor %}
+{% else %}
+<center>
+  <h5>No post found</h5>
+</center>
+  
+{% endif %}

@@ -5,12 +5,13 @@
 {% block page_content %}
 
 <div class="container-fluid">
-  <h1>{{ post_num }} Blogs</h1>
+  <center><h1>{{ post_num }} Blogs</h1></center>
+  <hr>
   
-<div class="row">
-
+{% if posts %}
+<div class="row d-flex align-items-stretch">
+  
   {% for post in posts %}
-  
 
     <div class="col-md-6">
       
@@ -38,6 +39,12 @@
     </div>
     {% endfor %}
   </div>
+    {% else %}
+    <center>
+      <h5>No post found</h5>
+    </center>
+{% endif %}
+  
   {% if is_paginated %}
   <div class="container">
     {% include 'pagination.html' %}

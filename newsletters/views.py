@@ -3,6 +3,8 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.template.loader import get_template
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import NewsUserForm, NewsletterCreationForm
 from . models import NewsletterUser, Newsletter
@@ -79,6 +81,8 @@ def newsletter_unsubscribe(request):
     template = 'newsletters/unsubscribe.html'
     return render(request, template, context)
 
+@login_required
+@permission_required('newsletters.add_newsletter', raise_exception=True)
 def newsletter_control(request):
     form = NewsletterCreationForm(request.POST or None)
 
@@ -101,18 +105,22 @@ def newsletter_control(request):
     return render(request, template, context)
 
 
-class NewsletterListView(generic.ListView):
+class NewsletterListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     model = Newsletter
     context_object_name = 'newsletters'
     template_name = 'newsletters/newsletter_control_list.html'
+    login_url = 'account_login'
     paginate_by =5
+    permission_required = 'newsletters.special_status'
 
 
-class NewsletterDetailView(generic.DetailView):
+class NewsletterDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
     model = Newsletter
     context_object_name = 'newsletter'
     template_name = 'newsletters/newsletter_control_detail.html'
-
+    login_url = 'account_login'
+    permission_required = 'newsletters.special_status'
+    
 
 def newsletter_control_edit(request, pk):
     newsletter = get_object_or_404(Newsletter, pk=pk)
