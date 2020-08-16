@@ -44,6 +44,9 @@ class Post(models.Model):
 
     class Meta: 
         ordering = ['-created_on']
+        indexes = [
+            models.Index(fields=['id'], name='id_index'),
+        ]
  
     def __str__(self): 
         return self.title

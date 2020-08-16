@@ -122,6 +122,8 @@ class NewsletterDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
     permission_required = 'newsletters.special_status'
     
 
+@login_required
+@permission_required('newsletters.change_newsletter', raise_exception=True)
 def newsletter_control_edit(request, pk):
     newsletter = get_object_or_404(Newsletter, pk=pk)
     form = NewsletterCreationForm(request.POST, instance=newsletter)
@@ -147,6 +149,8 @@ def newsletter_control_edit(request, pk):
     return render(request, template, context)
 
 
+@login_required
+@permission_required('newsletters.delete_newsletter', raise_exception=True)
 def newsletter_control_delete(request, pk):
     newsletter = get_object_or_404(Newsletter, pk=pk)
 
