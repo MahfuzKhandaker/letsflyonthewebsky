@@ -1,13 +1,16 @@
-<header class="sticky-nav">
-    <!-- sticky-header-nav -->
-    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-3 mb-3 bg-white border-bottom shadow-sm">
-        <a href="{% url 'home' %}" class="navbar-brand my-0 mr-md-auto font-weight-normal">letsflyonthewebsky</a>
+<header class="blog-header">
+    <div class="d-flex flex-column flex-md-row align-items-center p-2 px-md-3 bg-white border-bottom shadow-sm">
+        <a href="{% url 'home' %}" class="navbar-brand my-0 mr-md-auto font-weight-normal blog-header-logo">letsflyonthewebsky</a>
         
-        <div class="my-2 my-md-0 mr-md-2">
-            <form id="search" class="form-inline" action="{% url 'search_results' %}" method="get">
-                <input name="q" type="text" placeholder="Search.." aria-label="Search">
-                <button type="submit"><i class="fa fa-search"></i></button>
-            </form>
+        <div class="my-2 my-md-0 px-md-2">
+            <form id="search" class="search-form" action="{% url 'search_results' %}" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                </form>
         </div>
 
         <nav class="my-2 my-md-0 mr-md-2">
@@ -25,3 +28,4 @@
         </nav>
     </div>
 </header>
+

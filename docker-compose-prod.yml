@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    command: python /codeintry/manage.py runserver 0.0.0.0:8000
+    environment:
+      - ENVIRONMENT=production
+      - SECRET_KEY=jnu-ci52$$n44m$$w@u=9jmoatf$$_l9r)3@8(ka713m!1343=!pd
+      - DEBUG=0
+    volumes:
+      - .:/codeintry
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  db:
+    image: postgres:11
+    environment: 
+      - POSTGRES_DB=letsflyonthewebsky_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=bismillah_19@pg
+    volumes:
+      - my_data:/var/lib/postgresql/data/
+
+volumes:
+  my_data:
