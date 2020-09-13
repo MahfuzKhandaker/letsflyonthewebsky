@@ -17,30 +17,40 @@
     <div class="row">
         <div class="col-md-12 mt-3 left">
             <div class="card mb-4">
-                {% if instance.main_image %}
-                  <img class="card-img-top" src="{{ instance.main_image.url }}" alt="{{ instance.title }}" />
+                {% if post.main_image %}
+                  <img class="img-responsive" src="{{ post.main_image.url }}" alt="{{ post.title }}" />
                 {% endif %}
             
             <div class="card-body">
-                <h3 class="card-title">{{ instance.title }} </h3>
+                <h3 class="card-title">{{ post.title }} </h3>
                 <small class="text-muted">
                     Published on:&nbsp;
-                    {{ instance.created_on.date }} |&nbsp;
-                    <i class="far fa-clock text-info"></i> {% if instance.read_time <= 1 %} < 1 Minute {% else %}{{ instance.read_time }} minutes read {% endif %} |&nbsp;
-                    <i class="far fa-eye"></i> {{ instance.number_of_views }} views
-                    <i class="far fa-comment"></i> {{ instance.comments.count }} comments
+                    {{ post.published_date.date }} |&nbsp;
+            
+                    <i class="fas fa-thumbs-up"> {{ total_likes }}</i>
+                    <i class="far fa-clock text-info"></i> {% if post.read_time <= 1 %} < 1 Minute {% else %}{{ post.read_time }} min read {% endif %} |&nbsp;
+                    <i class="far fa-eye"></i> {{ post.number_of_views }} views |&nbsp;
+                    <i class="far fa-comment"></i> {{ post.comments.count }} comments |&nbsp;
+
                     Categories:&nbsp;
-                    {% for category in instance.categories.all %}
+                    {% for category in post.categories.all %}
                     <a href="{% url 'blog_category' category.name %}">
                       {{ category.name }}
                       </a>&nbsp;
                     {% endfor %}
                   </small>
-                    <p class="card-text">{{ instance.body | markdown | safe }}</p>
+                    <p class="card-text">{{ post.body | markdown | safe }}</p>
+                <br>
+
+                <div id="like-section">
+                    {% include 'blog/like_section.html' %}
+                </div>
+               
 
             <div>
                 <p class="lead">Leave a comment:</p>
-                <form method="POST" action="."> {% csrf_token %}
+                <form method="POST" action=".">
+                    {% csrf_token %}
                     {{ comment_form }}
                     <input type="submit" value="Submit" class="btn btn-primary">
                 </form>

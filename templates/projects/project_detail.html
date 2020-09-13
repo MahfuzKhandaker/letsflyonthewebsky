@@ -3,10 +3,8 @@
 {% block page_content %}
 
 <div class="col-md-12">
-    <div class="card w-75 project-card">
-      <div class="card-img-block">
-        <img class="img-fluid" src="{{ project.image.url }}" alt="Card image cap">
-      </div>
+    <div class="card">
+      <img class="card-img-top" src="{{ project.image.url }}" alt="Card image cap">
       <div class="card-body pt-5">
         <h3 class="card-title">{{ project.title }}</h3>
         <small>

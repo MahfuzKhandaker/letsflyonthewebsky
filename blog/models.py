@@ -6,6 +6,7 @@ from django.db.models.signals import pre_save
 from django.urls import reverse
 
 from blog.utils import get_read_time
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 
@@ -17,15 +18,17 @@ class Category(models.Model):
     def __str__(self): 
         return self.name
 
+    class Meta:
+        ordering = ['-name']
+        verbose_name_plural = 'categories'
 
-class PostManager(models.Manager):
-    def get_queryset(self):
-        return super(PostManager, self).get_queryset().filter(status=1)
 
-STATUS = (
-    (0,"Draft"),
-    (1,"Publish")
-)
+# class PostManager(models.Manager):
+#     def get_queryset(self):
+#         return super(PostManager, self).get_queryset().filter(published_date__lte=timezone.now()).order_by('-published_date')
+        # return Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+
+
 class Post(models.Model):
     main_image      = models.ImageField(upload_to='images/', blank=True)
     title           = models.CharField(max_length=125)
@@ -33,26 +36,39 @@ class Post(models.Model):
     summary         = models.CharField(max_length=255, null=True, blank=True)
     body            = models.TextField()
     created_on      = models.DateTimeField(auto_now_add=True)
-    status          = models.IntegerField(choices=STATUS, default=0)
+    published_date = models.DateTimeField(blank=True, null=True)
     last_modified   = models.DateTimeField(auto_now=True)
     categories      = models.ManyToManyField('Category', related_name='posts')
     read_time       = models.IntegerField(default=0)
     number_of_views = models.IntegerField(default=0, null=True, blank=True) 
-    number_of_likes = models.IntegerField(default=0, null=True, blank=True) 
+    likes           = models.ManyToManyField(get_user_model(), blank=True, related_name='post_likes')
 
-    objects = PostManager()
+
+    # objects = PostManager()
+    objects = models.Manager()
+    
 
     class Meta: 
         ordering = ['-created_on']
         indexes = [
             models.Index(fields=['id'], name='id_index'),
         ]
- 
+
+   
     def __str__(self): 
         return self.title
 
     def get_absolute_url(self):
         return reverse('blog_detail', kwargs={'slug': self.slug})
+
+    
+    # def get_like_url(self):
+    #     return reverse("post_likes", kwargs={"slug": self.slug})
+        
+        
+    def publish(self):
+        self.published_date = timezone.now()
+        self.save()
 
 
     @property

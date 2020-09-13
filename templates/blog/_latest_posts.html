@@ -1,9 +1,8 @@
-{% if posts %}
 {% for entry in posts %}
 <blockquote class="blockquote">
   <p class="mb-0"><a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a></p>
   <footer class="blockquote-footer">
-    {{ entry.created_on.date }} |&nbsp; 
+    {{ entry.published_date.date }} |&nbsp; 
 
     <cite title="Source Title">
       {% for category in entry.categories.all %}
@@ -14,10 +13,17 @@
     </cite>
   </footer>
 </blockquote>
-{% endfor %}
-{% else %}
+{% empty %}
 <center>
   <h5>No post found</h5>
 </center>
-  
-{% endif %}
+{% endfor %}
+
+    <header class="py-3">
+      <h3>Category</h3>
+    </header>
+    {% for cat in category_count %}
+    <div class="item d-flex justify-content-between">
+      <a href="#">{{ cat.categories__name }}</a><span>{{ cat.categories__name__count }}</span>
+    </div>
+    {% endfor %}

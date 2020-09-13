@@ -1,19 +1,21 @@
 from django.shortcuts import render
 from django.views import generic
+from django.utils import timezone
 from blog.models import Post
 from pages.models import About
 
 
 class HomePageView(generic.ListView):
     model = Post
-    context_object_name = 'posts'
     template_name = 'pages/home.html'
-    paginate_by = 2
+    paginate_by = 6
 
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        context['post_num'] = Post.objects.count()
+        context['posts'] = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+        context['post_num'] = Post.objects.filter(published_date__lte=timezone.now()).count()
+        context['most_recent'] = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')[:3]
         return context
 
 

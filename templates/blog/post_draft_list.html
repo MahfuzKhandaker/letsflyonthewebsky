@@ -1,0 +1,32 @@
+{% extends "_base.html" %}
+
+{% load markdown_extras %}
+
+{% block page_content %}
+
+<div class="container">
+  <h1>Draft Your Blog Post Here</h1>
+</div>
+{% for post in draft_post %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h3 class="card-title"><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h3>
+    <small class="text-muted">
+      Published on:&nbsp;
+      {{ post.created_on.date }} |&nbsp;
+      <i class="far fa-clock text-info"></i> {% if post.read_time <= 1 %} < 1 Minute {% else %}{{ post.read_time }} minutes read {% endif %} |&nbsp;
+      <i class="far fa-eye"></i> {{ post.number_of_views }} views
+      <i class="far fa-comment"></i> {{ post.comments.count }} comments
+      Categories:&nbsp;
+      {% for category in post.categories.all %}
+      <a href="{% url 'blog_category' category.name %}">
+        {{ category.name }}
+        </a>&nbsp;
+      {% endfor %}
+    </small>
+    <p>{{ post.body | markdown | safe }}</p>  
+  </div>
+</div>
+{% endfor %}
+  
+{% endblock %}

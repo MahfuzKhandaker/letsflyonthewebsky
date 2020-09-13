@@ -6,14 +6,15 @@ from blog.forms import PostForm
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slug', 'status', 'created_on')
-    list_filter = ("status",)
+
+    list_display = ('title', 'created_on', 'published_date')
+    list_filter = ('created_on', 'last_modified', 'published_date')
     search_fields = ['title', 'body']
     prepopulated_fields = {'slug': ('title',)}
     form = PostForm
-    fields = ['title', 'slug', 'summary', 'body', 'main_image', 'categories', 'status']
+    fields = ['title', 'slug', 'summary', 'body', 'main_image', 'categories', 'published_date', 'likes']
     
-    
+
 class CategoryAdmin(admin.ModelAdmin):
     pass
 

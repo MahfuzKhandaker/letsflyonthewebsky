@@ -7,7 +7,7 @@ class PostForm(forms.ModelForm):
     body = forms.CharField(widget=AdminPagedownWidget())
     class Meta:
         model = Post
-        fields = ['title', 'slug', 'summary', 'body', 'main_image', 'categories',]
+        fields = ['title', 'slug', 'summary', 'body', 'main_image', 'categories']
 
 
 class CommentForm(forms.Form):
