@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+# from blog.views import likes
 
 urlpatterns = [
     # Django admin
@@ -30,6 +31,7 @@ urlpatterns = [
     # Local apps
     path('', include('pages.urls')),
     path('blog/', include('blog.urls')),
+    # path('likes/', likes, name='likes'),
     path('contact/', include('contact.urls')),
     path('projects/', include('projects.urls')),
     path('newsletters/', include('newsletters.urls', namespace='newsletters')),

@@ -1,14 +1,20 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from django.db.models.signals import pre_save
 from django.urls import reverse
-
 from blog.utils import get_read_time
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    dob = models.DateField(null=True, blank=True)
+    photo = models.ImageField(null=True, blank=True)
+
+
+    def __str__(self):
+        return "Profile of user {}".format(self.user.username)
 
 class Category(models.Model):
     name = models.CharField(max_length=20, db_index=True,unique=True)
@@ -23,37 +29,50 @@ class Category(models.Model):
         verbose_name_plural = 'categories'
 
 
-# class PostManager(models.Manager):
-#     def get_queryset(self):
-#         return super(PostManager, self).get_queryset().filter(published_date__lte=timezone.now()).order_by('-published_date')
-        # return Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+class Author(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    profile_picture = models.ImageField()
 
+    objects = models.Manager()
+
+    def __str__(self):
+        return self.user.username
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super(PublishedManager, self).get_queryset().filter(status="published")
+        
 
 class Post(models.Model):
+    objects     = models.Manager()    #Default Manager
+    published   = PublishedManager()  #Custom Model Manager
+
+    STATUS_CHOICES = (
+        ('draft','Draft'),
+        ('published','Published'),
+    )
+
     main_image      = models.ImageField(upload_to='images/', blank=True)
+    image_caption   = models.CharField(max_length=125, blank=True, null=True)
     title           = models.CharField(max_length=125)
     slug            = models.SlugField(null=False, unique=True)
+    author          = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts')
     summary         = models.CharField(max_length=255, null=True, blank=True)
     body            = models.TextField()
     created_on      = models.DateTimeField(auto_now_add=True)
-    published_date = models.DateTimeField(blank=True, null=True)
+    published_date  = models.DateTimeField(blank=True, null=True)
     last_modified   = models.DateTimeField(auto_now=True)
     categories      = models.ManyToManyField('Category', related_name='posts')
     read_time       = models.IntegerField(default=0)
     number_of_views = models.IntegerField(default=0, null=True, blank=True) 
-    likes           = models.ManyToManyField(get_user_model(), blank=True, related_name='post_likes')
-
-
-    # objects = PostManager()
-    objects = models.Manager()
+    likes           = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='likes')
+    featured        = models.BooleanField()
+    status          = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    favourite       = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='favourite', blank=True)
     
 
     class Meta: 
-        ordering = ['-created_on']
-        indexes = [
-            models.Index(fields=['id'], name='id_index'),
-        ]
-
+        ordering = ['-id']
    
     def __str__(self): 
         return self.title
@@ -61,27 +80,7 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog_detail', kwargs={'slug': self.slug})
 
-    
-    # def get_like_url(self):
-    #     return reverse("post_likes", kwargs={"slug": self.slug})
-        
-        
-    def publish(self):
-        self.published_date = timezone.now()
-        self.save()
 
-
-    @property
-    def comments(self):
-        instance = self
-        qs = Comment.objects.filter_by_instance(instance)
-        return qs
-
-    @property
-    def get_content_type(self):
-        instance = self
-        content_type = ContentType.objects.get_for_model(instance.__class__)
-        return content_type
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     if instance.body:
@@ -89,48 +88,20 @@ def pre_save_post_receiver(sender, instance, *args, **kwargs):
         read_time_var = get_read_time(html_string)
         instance.read_time = read_time_var
 pre_save.connect(pre_save_post_receiver, sender=Post)
-        
-
-class CommentManager(models.Manager):
-    def all(self):
-        qs = super(CommentManager, self).filter(parent=None)
-        return qs
-
-    def filter_by_instance(self, instance):
-        content_type = ContentType.objects.get_for_model(instance.__class__)
-        obj_id = instance.id
-        qs = super(CommentManager, self).filter(content_type=content_type, object_id=obj_id).filter(parent=None)
-        return qs
-
+       
 
 class Comment(models.Model):
-    user            = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    content_type    = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id       = models.PositiveIntegerField()
-    content_object  = GenericForeignKey('content_type', 'object_id')
-    parent          = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
-    content         = models.TextField()
-    timestamp       = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    content = models.TextField(max_length=1000)
+    reply = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='replies', null=True, blank=True, default=None)
+    post = models.ForeignKey(
+        'Post', related_name='comments', on_delete=models.CASCADE)
 
-    objects = CommentManager()
+    objects = models.Manager()
 
-    class Meta:
+    class Meta: 
         ordering = ['-timestamp']
 
     def __str__(self):
-        return str(self.user.email)
-
-    def get_absolute_url(self):
-        return reverse('comment_thread', args=[self.pk])
-    
-    def get_delete_url(self):
-        return reverse('comment_delete', args=[self.pk])
-        
-    def children(self): #replies
-        return Comment.objects.filter(parent=self)
-
-    @property
-    def is_parent(self):
-        if self.parent is not None:
-            return False
-        return True
+        return '{}-{}'.format(self.post.title, str(self.user.username))

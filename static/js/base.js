@@ -25,45 +25,97 @@ $(window).on('load', function() { // makes sure the whole site is loaded
     $(".card-body img").each(function(){
         $(this).addClass("card-img-top");
     });
-    // reply btn fadeToggle()
-    $(".comment-reply-btn").click(function(event){
-        event.preventDefault();
-        $(this).parent().next(".comment-reply").fadeToggle();
+    $('.reply-btn').click(function() {
+      $(this).parent().parent().next('.replied-comments').fadeToggle()
     });
-    // like button
-    $("#like").click(function(event){
+
+
+    $(function(){
+      setTimeout(function(){
+        $('.alert').slideUp(2000);
+      }, 5000);
+    });
+
+    $(document).on('click', '#like', function(event){
       event.preventDefault();
-      console.log($("#like").val())
       console.log("from jquery section")
       var pk = $(this).attr('value');
       $.ajax({
-        type : "POST",
-        url : '{% url "post_likes" %}',
-        data : {'id': pk, "csrfmiddlewaretoken": '{{ csrf_token }}'},
-        dataType : 'json',
-        success : function(response){
+        type: 'POST',
+        url: '{% url "like_post" %}',
+        data: {
+          'post_id':pk, 
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function(response){
           $('#like-section').html(response['form'])
           console.log($('#like-section').html(response['form']));
         },
-        error : function(rs, e){
+        error: function(rs, e){
           console.log(rs.responseText);
-        }
-
+        },
       });
-
     });
-    // $('.likebutton').click(function(){ 
-    //   var id; 
-    //   id = $(this).attr("data-catid"); 
-    //   $.ajax( 
-    //   { 
-    //       type:"POST", 
-    //       url: "{% url 'post_likes' %}", 
-    //       data:{ 
-    //                post_id: id 
-    //   }, 
-    //   success: function( data ) 
-    //   { 
-    //       $( '#like'+ id ).removeClass('btn btn-primary btn-lg'); 
-    //       $( '#like'+ id ).addClass('btn btn-success btn-lg'); } }) });
+
+    $(document).on('submit', '.comment-form', function(event){
+      event.preventDefault();
+      console.log($(this).serialize());
+      $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+          $('.main-comment-section').html(response['form']);
+          $('textarea').val('');
+          $('.reply-btn').click(function() {
+            $(this).parent().parent().next('.replied-comments').fadeToggle();
+            $('textarea').val('');
+          });
+        },
+        error: function(rs, e) {
+          console.log(rs.responseText);
+        },
+      });
+    });
+
+    $(document).on('submit', '.reply-form', function(event){
+      event.preventDefault();
+      console.log($(this).serialize());
+      $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+          $('.main-comment-section').html(response['form']);
+          $('textarea').val('');
+          $('.reply-btn').click(function() {
+            $(this).parent().parent().next('.replied-comments').fadeToggle();
+            $('textarea').val('');
+          });
+        },
+        error: function(rs, e) {
+          console.log(rs.responseText);
+        },
+      });
+    });
+    // blogcard move up animation onScroll in view
+    $.fn.isInViewport = function () {
+    let elementTop = $(this).offset().top;
+    let elementBottom = elementTop + $(this).outerHeight();
+    let viewportTop = $(window).scrollTop();
+    let viewportBottom = viewportTop + $(window).height();
+    return elementBottom > viewportTop && elementTop < viewportBottom;
+    };
+    $(window).on("load resize scroll", function () {
+      $('.blogcard').each(function() {
+        if( $(this).isInViewport() ) {
+            $(this).addClass('animate');
+        } else {
+          $(this).removeClass('animate');
+        }
+      });
+    });
 });

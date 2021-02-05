@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'contact.apps.ContactConfig',
     'newsletters.apps.NewslettersConfig',
 ]
-
 # django-allauth config
 LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT = 'home' 

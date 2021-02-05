@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.views import generic
 from django.template.loader import render_to_string
 from django.db.models import Q
-
+from django.core import serializers
 from django.http import HttpResponse
 try:
     from django.utils import simplejson as json
@@ -94,53 +94,74 @@ def blog_detail(request, slug):
     post.number_of_views = post.number_of_views+1
     post.save()
 
-    form = CommentForm(request.POST or None)
-    if form.is_valid():
-        if not request.user.is_authenticated:
-            return redirect('account_login')
-        content_type = post.get_content_type
-        object_id = post.id
-        content_data = form.cleaned_data['content']
-
-        parent_obj = None
-        try:
-            parent_id = int(request.POST.get('parent_id'))
-        except:
-            parent_id = None
+    comments = Comment.objects.filter(post=post, reply=None).order_by('-id')
     
-        if parent_id:
-            parent_qs = Comment.objects.filter(id=parent_id)
-            if parent_qs.exists():
-                parent_obj = parent_qs.first()
-        
-        Comment.objects.get_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=object_id,
-            content=content_data,
-            parent=parent_obj
-        )
-    
-    
-    form = CommentForm()
-    # comments = Comment.objects.filter_by_instance(instance)
-    comments = post.comments
-
     is_liked = False
     if post.likes.filter(id=request.user.id).exists():
         is_liked = True
 
+    is_favourite = False
+    if post.favourite.filter(id=request.user.id).exists():
+        is_favourite = True
+
+    if request.method=='POST':
+        querydict = request.POST
+        comment_form = CommentForm(querydict)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.reply_id = querydict.get('comment_id')
+            comment.save()
+    else:
+        comment_form = CommentForm()
+
     context = {
         'post': post,
         'is_liked': is_liked,
-        'total_likes': post.likes.count(),
+        'is_favourite': is_favourite,
         'comments': comments,
-        'comment_form': form,
+        'total_likes': post.likes.count(),
+        'total_comments': post.comments.count(),
+        'comment_form': comment_form,
     }
+    if request.is_ajax():
+        html = render_to_string('blog/comment_section.html', context, request=request)
+        comments = serializers.serialize('json', list(comments), fields=('content', 'reply', 'post', 'user__username'))
+        return JsonResponse({'form': html, 'comments': comments})
+
     return render(request, 'blog/blog_detail.html', context)
 
-def post_likes(request):
-    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+# class PostDetailView(generic.DetailView):
+#     model = Post
+#     context_object_name = 'post'
+#     template_name = 'blog/blog_detail.html'
+
+#     def get_context_data(self, *args, **kwargs):
+#         context = super(PostDetailView, self).get_context_data(*args, **kwargs)
+#         post = get_object_or_404(Post, slug=self.kwargs['slug'])
+#         context['total_likes'] = post.likes.count()
+#         return context
+
+
+def post_favourite_list(request):
+    user = request.user
+    favourite_posts = user.favourite.all()
+    context = {
+        'favourite_posts': favourite_posts,
+    }
+    return render(request, 'blog/post_favourite_list.html', context)
+
+def favourite_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if post.favourite.filter(id=request.user.id).exists():
+        post.favourite.remove(request.user)
+    else:
+        post.favourite.add(request.user)
+    return HttpResponseRedirect(post.get_absolute_url())
+
+def like_post(request):
+    post = get_object_or_404(Post, id=request.POST['post_id'])
     is_liked = False
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
@@ -148,6 +169,7 @@ def post_likes(request):
     else:
         post.likes.add(request.user)
         is_liked = True
+
     context ={
         'post': post,
         'is_liked': is_liked,
@@ -156,63 +178,3 @@ def post_likes(request):
     if request.is_ajax():
         html = render_to_string('blog/like_section.html', context, request=request)
         return JsonResponse({'form': html})
-    # return HttpResponseRedirect(post.get_absolute_url())
-
-@login_required
-def comment_delete(request, pk):
-    try:
-        obj = Comment.objects.get(pk=pk)
-    except:
-        raise Http404
-
-    if obj.user != request.user:
-        response = HttpResponse("You do not have permission to delete this comment.")
-        response.status_code = 403
-        return response
-    
-    if request.method == "POST":
-        parent_obj_url = obj.content_object.get_absolute_url()
-        obj.delete()
-        messages.success(request, "This has been deleted.")
-        return HttpResponseRedirect(parent_obj_url)
-    
-    context = {
-        "object": obj
-    }
-    return render(request, "blog/confirm_delete.html", context)
-
-def comment_thread(request, pk):
-    obj = get_object_or_404(Comment, pk=pk)
-    
-    form = CommentForm(request.POST or None)
-    if form.is_valid():
-        if not request.user.is_authenticated:
-            return redirect('account_login')
-        content_type = obj.content_object.get_content_type
-        object_id = obj.content_object.id
-        content_data = form.cleaned_data['content']
-        parent_obj = None
-        try:
-            parent_id = int(request.POST.get('parent_id'))
-        except:
-            parent_id = None
-            
-        if parent_id:
-            parent_qs = Comment.objects.filter(id=parent_id)
-            if parent_qs.exists():
-                parent_obj = parent_qs.first()
-        
-        Comment.objects.get_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=object_id,
-            content=content_data,
-            parent=parent_obj
-        )
-        form = CommentForm()
-       
-    context = {
-        'comment': obj,
-        'form': form
-    }
-    return render(request, 'blog/comment_thread.html', context)
